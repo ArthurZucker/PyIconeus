@@ -30,9 +30,9 @@ mypy --install-types --non-interactive src/pyiconeus tests
 ```
 
 The test suite must maintain at least 90% total coverage. Test data is fetched
-per file, on demand, from a Hugging Face bucket and cached under
-`~/.cache/pyiconeus-test-data` — no manual download step is needed. Set
-`PYICONEUS_TEST_BUCKET` or `PYICONEUS_TEST_DATA` to override the source or cache.
+per file, on demand, from a Hugging Face dataset and cached in the Hugging Face
+cache — no manual download step is needed. Set `PYICONEUS_TEST_REPO` or
+`HF_HUB_CACHE` to override the source or cache.
 
 The same fixtures are archived on Zenodo:
 

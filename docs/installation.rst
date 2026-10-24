@@ -46,13 +46,13 @@ transforms3d. To install the test dependency as well from a source checkout:
 Check the installation
 ------------------------
 
-The repository tests use sample files hosted in a Hugging Face bucket. Each
-test downloads only the files it needs, on first use, into
-``~/.cache/pyiconeus-test-data`` — there is no separate download step, and the
-full 3 GB data set is never required.
+The repository tests use sample files hosted in a Hugging Face dataset. Each
+test downloads only the files it needs, on first use, into the Hugging Face
+cache — there is no separate download step, and the full 3 GB data set is never
+required.
 
-Set ``PYICONEUS_TEST_BUCKET`` to change the source, or ``PYICONEUS_TEST_DATA``
-to change the cache location. The same fixtures are archived on Zenodo at
+Set ``PYICONEUS_TEST_REPO`` to change the source, or ``HF_HUB_CACHE`` to change
+the cache location. The same fixtures are archived on Zenodo at
 `10.5281/zenodo.22249523 <https://doi.org/10.5281/zenodo.22249523>`_.
 
 Run the tests:

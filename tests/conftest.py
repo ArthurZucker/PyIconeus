@@ -2,39 +2,28 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""Test data access, backed by a Hugging Face bucket.
-
-Replaces download_script.py: fixtures are fetched per file, on first use, and
-cached across runs, instead of downloading the full 3.2 GB archive up front.
-
-Override the source with PYICONEUS_TEST_BUCKET (e.g. once the bucket is
-transferred to an Iconeus namespace) or the cache location with
-PYICONEUS_TEST_DATA.
-"""
+"""Test data, fetched per file from a Hugging Face dataset and cached."""
 
 import os
-from pathlib import Path
 
 import pytest
-from huggingface_hub import download_bucket_files
+from huggingface_hub import hf_hub_download, snapshot_download
 
-BUCKET = os.environ.get("PYICONEUS_TEST_BUCKET", "ArthurZ/pyiconeus-test-data")
-CACHE = Path(
-    os.environ.get(
-        "PYICONEUS_TEST_DATA", Path.home() / ".cache" / "pyiconeus-test-data"
-    )
+REPO = os.environ.get("PYICONEUS_TEST_REPO", "ArthurZ/pyiconeus-test-data")
+REVISION = os.environ.get(
+    "PYICONEUS_TEST_REVISION", "ed64082ce809843fe11796f0116873f5fb5981df"
 )
 
 
 @pytest.fixture(scope="session")
 def data_path():
-    """Return a local path for a bucket file, downloading it once if needed."""
+    """Return a local path for a dataset file, downloading it once if needed."""
 
     def get(name: str) -> str:
-        local = CACHE / name
-        if not local.exists():
-            local.parent.mkdir(parents=True, exist_ok=True)
-            download_bucket_files(BUCKET, [(name, local)])
-        return str(local)
+        return hf_hub_download(REPO, name, repo_type="dataset", revision=REVISION)
 
     return get
+
+
+if __name__ == "__main__":
+    print(snapshot_download(REPO, repo_type="dataset", revision=REVISION))

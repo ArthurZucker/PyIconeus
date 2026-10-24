@@ -14,8 +14,35 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  HF_HUB_CACHE: ${{ github.workspace }}/.hf-cache
+
 jobs:
+  prepare-data:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: "3.12"
+    - name: Restore test data cache
+      id: test-data-cache
+      uses: actions/cache@v6
+      with:
+        path: .hf-cache
+        key: pyiconeus-test-data-${{ runner.os }}-${{ hashFiles('tests/conftest.py') }}
+    - name: Download test data
+      if: steps.test-data-cache.outputs.cache-hit != 'true'
+      run: |
+        pip install huggingface_hub pytest
+        python tests/conftest.py
+
   build:
+    needs: prepare-data
     strategy:
       fail-fast: false
       matrix:
@@ -26,6 +53,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
+
+    - name: Restore test data cache
+      uses: actions/cache/restore@v6
+      with:
+        path: .hf-cache
+        key: pyiconeus-test-data-${{ runner.os }}-${{ hashFiles('tests/conftest.py') }}
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v7
